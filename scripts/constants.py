@@ -1,24 +1,21 @@
 import os
+from pathlib import Path
 
 # Base Directories
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_DIR = os.path.join(BASE_DIR, "data")
-RAW_DATA_DIR = os.path.join(DATA_DIR, "raw")
-PROCESSED_DATA_DIR = os.path.join(DATA_DIR, "processed")
+BASE_DIR = Path(__file__).parent.parent
+DATA_DIR = BASE_DIR / "data"
+RAW_DATA_DIR = DATA_DIR / "raw"
+PROCESSED_DATA_DIR = DATA_DIR / "processed" # Silver Layer
+
+GOLD_DATA_DIR = DATA_DIR / "gold" # Gold Layer
+VISUALS_DIR = BASE_DIR / "visuals"
 
 # Database Path
-DB_PATH = os.path.join(DATA_DIR, "olist_raw.db")
-LOG_FILE = os.path.join(BASE_DIR, "data_guardian.log")
+DB_PATH = os.getenv("OLIST_DB_PATH", DATA_DIR / "olist_raw.db")
+LOG_FILE = BASE_DIR / "data_guardian.log"
 
-DB_CONN_GX = "sqlite:///data/olist_raw.db"
+DB_CONN = f"sqlite:///{DB_PATH}"
 
 # List of Olist files
-TABLES = {
-    "customers": "olist_customers_dataset.csv",
-    "orders": "olist_orders_dataset.csv",
-    "order_items": "olist_order_items_dataset.csv",
-    "products": "olist_products_dataset.csv",
-    "sellers": "olist_sellers_dataset.csv",
-    "marketing_leads": "olist_marketing_qualified_leads_dataset.csv",
-    "closed_deals": "olist_closed_deals_dataset.csv"
-}
+TABLES = {f.stem.replace('olist_', '').replace('_dataset', ''): f.name 
+          for f in RAW_DATA_DIR.glob("*.csv")}
